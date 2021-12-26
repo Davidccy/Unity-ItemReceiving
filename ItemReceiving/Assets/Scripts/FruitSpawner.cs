@@ -4,8 +4,6 @@ using UnityEngine;
 public class FruitSpawner : MonoBehaviour {
     #region Serialized Fields
     [SerializeField] private PlayerController2D _player = null;
-    [SerializeField] private UIStatus _status = null;
-    [SerializeField] private UIFruitReceivedEffect _receivedEffect = null;
 
     [SerializeField] private Fruit _fruitRes = null;
     [SerializeField] private float _boundX = 0;
@@ -47,6 +45,14 @@ public class FruitSpawner : MonoBehaviour {
     #endregion
 
     #region Mono Behaviour Hooks
+    private void OnEnable() {
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+    }
+
     private void Update() {
         _remainedTimeToSpawn -= Time.deltaTime;
 
@@ -59,6 +65,16 @@ public class FruitSpawner : MonoBehaviour {
         if (_doSpawn) {
             DoSpawn();
         }
+    }
+    #endregion
+
+    #region Event Handlings
+    private void OnFruitReceived(BaseEventArgs args) {
+        FruitReceivedEventArgs frArgs = args as FruitReceivedEventArgs;
+
+        Fruit f = frArgs.Fruit;
+        bool removed = _spawnedFruitList.Remove(f);
+        Destroy(f.gameObject);
     }
     #endregion
 
@@ -86,23 +102,15 @@ public class FruitSpawner : MonoBehaviour {
             float rndPosY = Random.Range(posCenter.y - BoundY, posCenter.y + BoundY);
             rndPos = new Vector3(rndPosX, rndPosY, posCenter.z);
 
+            // NOTE:
+            // Prevent spawn fruit on player
             if (Vector3.Distance(playerPos, rndPos) >= 1.0f) {
                 posFound = true;
             }
         }
 
         Fruit newFruit = Instantiate(_fruitRes, rndPos, new Quaternion());
-        newFruit.SetTriggeredAction(OnFruitTriggered);
-
         _spawnedFruitList.Add(newFruit);
-    }
-
-    private void OnFruitTriggered(Fruit f) {
-        _status.FruitReceived(1);
-        _receivedEffect.Play(f.transform.position);
-
-        bool removed = _spawnedFruitList.Remove(f);
-        Destroy(f.gameObject);
     }
     #endregion
 

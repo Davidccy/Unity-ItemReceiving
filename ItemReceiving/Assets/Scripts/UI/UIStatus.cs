@@ -19,25 +19,44 @@ public class UIStatus : MonoBehaviour {
     #region Mono Behaviour Hooks
     private void OnEnable() {
         Refresh();
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVING_EFFECT_FINISHED, OnFruitReceivingEffectFinished);
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVING_EFFECT_FINISHED, OnFruitReceivingEffectFinished);
     }
     #endregion
 
-    #region APIs
-    public void FruitReceived(int count) {
-        _fruitCount += count;
+    #region Event Handlings
+    private void OnFruitReceived(BaseEventArgs args) {
+        FruitReceivedEventArgs frArgs = args as FruitReceivedEventArgs;
 
-        Refresh();
+        int amount = frArgs.Amount;
+        FruitReceived(amount);
     }
 
-    public void PlayFruitReceivedEffect() {
-        StopAllCoroutines();
-        StartCoroutine(PlayFruitBouncing());
+    private void OnFruitReceivingEffectFinished(BaseEventArgs args) {
+        //FruitReceivingEffectFinishedEventArgs frefArgs = args as FruitReceivingEffectFinishedEventArgs;
+        PlayFruitReceivedEffect();
     }
     #endregion
 
     #region Internal Methods
     private void Refresh() {
         _textFruitAmount.text = string.Format("{0}", _fruitCount);
+    }
+
+    private void FruitReceived(int count) {
+        _fruitCount += count;
+
+        Refresh();
+    }
+
+    private void PlayFruitReceivedEffect() {
+        StopAllCoroutines();
+        StartCoroutine(PlayFruitBouncing());
     }
 
     private IEnumerator PlayFruitBouncing() {

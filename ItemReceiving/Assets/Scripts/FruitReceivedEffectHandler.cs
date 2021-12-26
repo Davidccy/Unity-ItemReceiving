@@ -2,9 +2,8 @@
 using UnityEngine;
 using UnityEngine.Animations;
 
-public class UIFruitReceivedEffect : MonoBehaviour {
+public class FruitReceivedEffectHandler : MonoBehaviour {
     #region Serialized Fields
-    [SerializeField] private UIStatus _uiStatus = null;
     [SerializeField] private Canvas _canvas = null;
     [SerializeField] private RectTransform _rtEffectGoal = null;
     [SerializeField] private GameObject _goEffectRes = null;
@@ -19,10 +18,27 @@ public class UIFruitReceivedEffect : MonoBehaviour {
         }
         _pc.AddSource(new ConstraintSource { sourceTransform = _rtEffectGoal.transform, weight = 1 });
     }
+
+    private void OnEnable() {
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+    }
+    #endregion
+
+    #region Event Handlings
+    private void OnFruitReceived(BaseEventArgs args) {
+        FruitReceivedEventArgs frArgs = args as FruitReceivedEventArgs;
+
+        Vector3 receivedPos = frArgs.Position;
+        Play(receivedPos);
+    }
     #endregion
 
     #region Internal Methods
-    public void Play(Vector3 startPos) {
+    private void Play(Vector3 startPos) {
         // NOTE:
         // "startpos" is world position
 
@@ -67,7 +83,8 @@ public class UIFruitReceivedEffect : MonoBehaviour {
         var emission = ps.emission;
         emission.rateOverDistance = 0;
 
-        _uiStatus.PlayFruitReceivedEffect();
+        FruitReceivingEffectFinishedEventArgs args = new FruitReceivingEffectFinishedEventArgs();
+        args.Dispatch();
 
         Destroy(newGo, psLiftTime);
     }

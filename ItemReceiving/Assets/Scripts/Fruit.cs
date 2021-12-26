@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class Fruit : MonoBehaviour {
     #region Serialized Fields
     [SerializeField] private AnimationCurve _aniCurve = null; // For bouncing
-    #endregion
-
-    #region Internal Fields
-    private Action<Fruit> _onTriggeredAction = null;
     #endregion
 
     #region Mono Behaviour Hooks
@@ -17,12 +12,6 @@ public class Fruit : MonoBehaviour {
     }
     private void OnDestroy() {
         StopAllCoroutines();
-    }
-    #endregion
-
-    #region APIs
-    public void SetTriggeredAction(Action<Fruit> action) {
-        _onTriggeredAction = action;
     }
     #endregion
 
@@ -52,9 +41,11 @@ public class Fruit : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision) {
         PlayerController2D player = collision.GetComponent<PlayerController2D>();
         if (player != null) {
-            if (_onTriggeredAction != null) {
-                _onTriggeredAction(this);
-            }
+            FruitReceivedEventArgs frArgs = new FruitReceivedEventArgs();
+            frArgs.Amount = 1;
+            frArgs.Fruit = this;
+            frArgs.Position = this.transform.position;
+            frArgs.Dispatch();
         }
     }
     #endregion
