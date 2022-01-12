@@ -38,15 +38,21 @@ public class FruitSpawner : MonoBehaviour {
         }
     }
 
-    private float SpawningPeriod {
+    public float SpawningPeriod {
         get {
             return Mathf.Max(0.1f, _spawningPeriod);
         }
+        set {
+            _spawningPeriod = Mathf.Max(0.1f, value);
+        }
     }
 
-    private float MaxFruitCount {
+    public int MaxFruitCount {
         get {
             return Mathf.Max(0, _maxFruitCount);
+        }
+        set {
+            _maxFruitCount = Mathf.Max(0, value);
         }
     }
     #endregion

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -9,6 +10,10 @@ public class FruitReceivedEffectHandler : MonoBehaviour {
     [SerializeField] private GameObject _goEffectRes = null;
     [SerializeField] private AnimationCurve _aniCurve = null;
     [SerializeField] private ParentConstraint _pc = null;
+    #endregion
+
+    #region Internal Fields
+    private List<GameObject> _performingGoList = new List<GameObject>();
     #endregion
 
     #region Mono Behaviour Hooks
@@ -24,7 +29,13 @@ public class FruitReceivedEffectHandler : MonoBehaviour {
     }
 
     private void OnDisable() {
-        EventManager.Instance.Register(EventID.FRUIT_RECEIVED, OnFruitReceived);
+        EventManager.Instance.Unregister(EventID.FRUIT_RECEIVED, OnFruitReceived);
+        StopAllCoroutines();
+
+        // Destroy all performaing gameobjects
+        for (int i = 0; i < _performingGoList.Count; i++) {
+            Destroy(_performingGoList[i]);
+        }
     }
     #endregion
 
@@ -63,9 +74,7 @@ public class FruitReceivedEffectHandler : MonoBehaviour {
         GameObject newGo = Instantiate(_goEffectRes, this.transform);
         RectTransform newGoRect = newGo.transform as RectTransform;
         newGo.SetActive(true);
-
-        ParticleSystem ps = newGo.GetComponent<ParticleSystem>();
-        float psLiftTime = ps.main.startLifetimeMultiplier;
+        _performingGoList.Add(newGo);
 
         float progress = 0;
         while (progress < 1.0f) {
@@ -81,13 +90,20 @@ public class FruitReceivedEffectHandler : MonoBehaviour {
         newGoRect.anchoredPosition = goalPos;
 
         // Goal arrived
-        var emission = ps.emission;
-        emission.rateOverDistance = 0;
-
         FruitReceivingEffectFinishedEventArgs args = new FruitReceivingEffectFinishedEventArgs();
         args.Dispatch();
 
+        ParticleSystem ps = newGo.GetComponent<ParticleSystem>();
+        float psLiftTime = 0;
+        if (ps != null) {
+             psLiftTime = ps.main.startLifetimeMultiplier;
+
+            var emission = ps.emission;
+            emission.rateOverDistance = 0;
+        }
+
         Destroy(newGo, psLiftTime);
+        _performingGoList.Remove(newGo);
     }
     #endregion
 }

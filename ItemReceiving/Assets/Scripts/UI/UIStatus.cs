@@ -21,6 +21,11 @@ public class UIStatus : MonoBehaviour {
     #region Properties
     public Vector3 FruitViewport {
         get {
+            if (_canvasCamera == null) {
+                Debug.LogErrorFormat("Invalid canvas Camera");
+                return Vector3.zero;
+            }
+
             return _canvasCamera.WorldToViewportPoint(_rtFruit.position);
         }
     }
