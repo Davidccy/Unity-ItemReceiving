@@ -488,12 +488,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 201848956}
-  _fruitRes: {fileID: 969281756091124498, guid: 2c9b81ae3a360c64ea6ec5a32c45bd07,
+  _fruitType: 0
+  _fruit2DRes: {fileID: 969281756091124498, guid: 2c9b81ae3a360c64ea6ec5a32c45bd07,
+    type: 3}
+  _fruit3DRes: {fileID: 5916854284720821644, guid: 9c48f6d53aba0be43925df6e2131c259,
     type: 3}
   _boundX: 2.5
   _boundY: 4.5
   _spawningPeriod: 0.2
   _maxFruitCount: 1
+  _avoidOnPlayer: 1
 --- !u!1 &772282494
 GameObject:
   m_ObjectHideFlags: 0

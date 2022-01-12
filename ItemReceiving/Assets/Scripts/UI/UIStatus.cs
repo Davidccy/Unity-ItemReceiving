@@ -4,6 +4,8 @@ using TMPro;
 
 public class UIStatus : MonoBehaviour {
     #region Serialized Fields
+    [SerializeField] private Camera _canvasCamera = null;
+
     [Header("Icon")]
     [SerializeField] private RectTransform _rtFruit = null;
     [SerializeField] private AnimationCurve _aniCurveFruit = null;
@@ -14,6 +16,14 @@ public class UIStatus : MonoBehaviour {
 
     #region Internal Fields
     private int _fruitCount = 0;
+    #endregion
+
+    #region Properties
+    public Vector3 FruitViewport {
+        get {
+            return _canvasCamera.WorldToViewportPoint(_rtFruit.position);
+        }
+    }
     #endregion
 
     #region Mono Behaviour Hooks

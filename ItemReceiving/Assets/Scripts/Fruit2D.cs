@@ -1,7 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Fruit : MonoBehaviour {
+public class Fruit2D : FruitBase {
+
+    public Fruit2D() {
+        FType = FruitType.Fruit2D;
+    }
+
     #region Serialized Fields
     [SerializeField] private AnimationCurve _aniCurve = null; // For bouncing
     #endregion
@@ -40,7 +45,7 @@ public class Fruit : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision) {
         PlayerController2D player = collision.GetComponent<PlayerController2D>();
-        if (player != null) {
+        if (player != null && _canBeRecieved) {
             FruitReceivedEventArgs frArgs = new FruitReceivedEventArgs();
             frArgs.Amount = 1;
             frArgs.Fruit = this;

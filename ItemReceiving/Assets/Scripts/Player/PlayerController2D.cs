@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerController2D : MonoBehaviour {
+public class PlayerController2D : PlayerControllerBase {
     #region Serialized Fields
     [SerializeField] private float _speedHor = 0;
     [SerializeField] private float _speedVer = 0;

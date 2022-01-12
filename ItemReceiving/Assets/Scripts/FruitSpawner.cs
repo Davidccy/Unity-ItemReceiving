@@ -2,18 +2,25 @@
 using UnityEngine;
 
 public class FruitSpawner : MonoBehaviour {
-    #region Serialized Fields
-    [SerializeField] private PlayerController2D _player = null;
+    public enum FruitType { 
+        Fruit2D,
+        Fruit3D,
+    }
 
-    [SerializeField] private Fruit _fruitRes = null;
+    #region Serialized Fields
+    [SerializeField] private PlayerControllerBase _player = null;
+    [SerializeField] private FruitType _fruitType = FruitType.Fruit2D;
+    [SerializeField] private Fruit2D _fruit2DRes = null;
+    [SerializeField] private Fruit3D _fruit3DRes = null;
     [SerializeField] private float _boundX = 0;
     [SerializeField] private float _boundY = 0;
     [SerializeField] private float _spawningPeriod = 0;
     [SerializeField] private int _maxFruitCount = 0;
+    [SerializeField] private bool _avoidOnPlayer = false;
     #endregion
 
     #region Internal Fields
-    private List<Fruit> _spawnedFruitList = new List<Fruit>();
+    private List<FruitBase> _spawnedFruitList = new List<FruitBase>();
     private float _remainedTimeToSpawn = -1;
     private bool _doSpawn = false;
     #endregion
@@ -71,8 +78,7 @@ public class FruitSpawner : MonoBehaviour {
     #region Event Handlings
     private void OnFruitReceived(BaseEventArgs args) {
         FruitReceivedEventArgs frArgs = args as FruitReceivedEventArgs;
-
-        Fruit f = frArgs.Fruit;
+        FruitBase f = frArgs.Fruit;
         bool removed = _spawnedFruitList.Remove(f);
         Destroy(f.gameObject);
     }
@@ -104,13 +110,18 @@ public class FruitSpawner : MonoBehaviour {
 
             // NOTE:
             // Prevent spawn fruit on player
-            if (Vector3.Distance(playerPos, rndPos) >= 1.0f) {
+            if (!_avoidOnPlayer) {
                 posFound = true;
+            }
+            else {
+                if (Vector3.Distance(playerPos, rndPos) >= 1.0f) {
+                    posFound = true;
+                }
             }
         }
 
-        Fruit newFruit = Instantiate(_fruitRes, rndPos, new Quaternion());
-        _spawnedFruitList.Add(newFruit);
+        FruitBase fruit = Instantiate(GetFruitRes(_fruitType), rndPos, GetFruitInitQuaternion(_fruitType), this.transform);
+        _spawnedFruitList.Add(fruit);
     }
     #endregion
 
@@ -129,6 +140,26 @@ public class FruitSpawner : MonoBehaviour {
         Gizmos.DrawLine(spawnRangeLD, spawnRangeRD); // Down line
 
         Gizmos.DrawIcon(pos, "Apple");
+    }
+    #endregion
+
+    #region Internal Methods
+    private FruitBase GetFruitRes(FruitType ft) {
+        if (ft == FruitType.Fruit2D) {
+            return _fruit2DRes;
+        }
+
+        return _fruit3DRes;
+    }
+
+    private Quaternion GetFruitInitQuaternion(FruitType ft) {
+        Quaternion q = new Quaternion();
+        if (ft == FruitType.Fruit2D) {
+            return q;
+        }
+
+        q.eulerAngles = new Vector3(-90, 0, 0);
+        return q;
     }
     #endregion
 }

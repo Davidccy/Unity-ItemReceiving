@@ -12,7 +12,7 @@ public class BaseEventArgs {
 }
 
 public class FruitReceivedEventArgs : BaseEventArgs {
-    public Fruit Fruit;
+    public FruitBase Fruit;
     public int Amount;
     public Vector3 Position;
 

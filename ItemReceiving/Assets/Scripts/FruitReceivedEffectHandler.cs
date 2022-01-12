@@ -32,6 +32,7 @@ public class FruitReceivedEffectHandler : MonoBehaviour {
     private void OnFruitReceived(BaseEventArgs args) {
         FruitReceivedEventArgs frArgs = args as FruitReceivedEventArgs;
 
+        FruitBase.FruitType ft = frArgs.Fruit.FType;
         Vector3 receivedPos = frArgs.Position;
         Play(receivedPos);
     }

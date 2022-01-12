@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4641700060650442412}
   - component: {fileID: 969281756091124498}
   m_Layer: 0
-  m_Name: Fruit
+  m_Name: Fruit2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,6 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de11a9f8b7a58774da7cba9bbc2c3f62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canBeRecieved: 1
   _aniCurve:
     serializedVersion: 2
     m_Curve:
